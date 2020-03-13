@@ -12,6 +12,8 @@ import org.jruby.exceptions.RaiseException;
 import org.jruby.javasupport.JavaEmbedUtils;
 import org.jruby.runtime.builtin.IRubyObject;
 
+import javax.servlet.http.HttpServletRequestWrapper;
+
 import java.io.IOException;
 
 /**
@@ -46,10 +48,25 @@ public class DefaultRackApplication implements RackApplication {
 
     public RackResponse call(final RackEnvironment env) {
         final Ruby runtime = getRuntime();
+        System.out.println("DBG: DefaultRackApplication: call");
+
         try {
             final RackInput io = new RackInput(runtime, env);
+            final RackHijack hijack =
+                new RackHijack(runtime,
+                               RackHijack.getRackHijackClass(runtime));
+
+            if (env instanceof HttpServletRequestWrapper) {
+                hijack.setHttpServletRequestWrapper(((HttpServletRequestWrapper) env));
+            }
+
             try {
                 IRubyObject servlet_env = JavaEmbedUtils.javaToRuby(runtime, env);
+
+                if (env instanceof RackEnvironment.ToHijack) {
+                    ((RackEnvironment.ToHijack) env).setHijack(hijack);
+                }
+
                 if (env instanceof RackEnvironment.ToIO) {
                     ((RackEnvironment.ToIO) env).setIO(io);
                 }
@@ -61,6 +78,11 @@ public class DefaultRackApplication implements RackApplication {
                     runtime.evalScriptlet("require 'jruby/rack/environment'");
                     adapter.setInstanceVariable(servlet_env, "@_io", io);
                 }
+
+                String java_servlet_env_str = servlet_env.toString();
+
+                System.out.println("DBG: DefaultRackApplication: call: env: " + java_servlet_env_str);
+
                 IRubyObject response = adapter.callMethod(getApplication(), "call", servlet_env);
                 return (RackResponse) JavaEmbedUtils.rubyToJava(runtime, response, RackResponse.class);
             }

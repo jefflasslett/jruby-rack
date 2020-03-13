@@ -16,6 +16,7 @@ import java.io.UnsupportedEncodingException;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletResponse;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
@@ -262,5 +263,16 @@ public class ServletRackIncludedResponse extends HttpServletResponseWrapper {
 		public void write(int i) throws IOException {
 			dataOutputStream.write(i);
 		}
+
+    @Override
+    public boolean isReady() {
+        throw new UnsupportedOperationException("isReady()");
+    }
+
+    @Override
+    public void setWriteListener(WriteListener write_listener) {
+        throw new UnsupportedOperationException("setWriteListener()");
+    }
+
 	}
 }

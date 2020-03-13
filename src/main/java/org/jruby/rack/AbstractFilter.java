@@ -63,6 +63,7 @@ public abstract class AbstractFilter implements Filter {
         RackResponseEnvironment responseEnv = new ServletRackResponseEnvironment(httpResponse);
 
         if (isDoDispatch(requestCapture, responseCapture, chain, env, responseEnv)) {
+            System.out.println("DBG: AbstractFilter: doFilter");
             getDispatcher().process(env, responseEnv);
         }
 

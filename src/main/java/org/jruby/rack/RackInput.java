@@ -31,11 +31,11 @@ import org.jruby.util.ByteList;
 /**
  * Native (Java) implementation of a Rack input.
  * Available in Ruby as the class <code>JRuby::Rack::Input</code>.
- * 
+ *
  * @author nicksieger
  */
 public class RackInput extends RubyObject {
-    
+
     private static final ObjectAllocator ALLOCATOR = new ObjectAllocator() {
         public IRubyObject allocate(Ruby runtime, RubyClass klass) {
             return new RackInput(runtime, klass);
@@ -46,7 +46,7 @@ public class RackInput extends RubyObject {
     public static RubyClass getClass(Ruby runtime, String name, RubyClass parent,
                                      ObjectAllocator allocator, Class annoClass) {
         RubyModule jruby = runtime.getOrCreateModule("JRuby");
-        
+
         RubyClass klass = jruby.getClass(name);
         if (klass == null) {
             klass = jruby.defineClassUnder(name, parent, allocator);
@@ -56,31 +56,31 @@ public class RackInput extends RubyObject {
     }
 
     public static RubyClass getRackInputClass(final Ruby runtime) { // JRuby::Rack::Input
-        
+
         RubyModule jruby = runtime.getOrCreateModule("JRuby");
         RubyModule rack = (RubyModule) jruby.getConstantAt("Rack");
         if (rack == null) {
             rack = runtime.defineModuleUnder("Rack", jruby);
         }
-  
+
         RubyClass klass = rack.getClass("Input"); // JRuby::Rack getClass('Input')
         if (klass == null) {
             final RubyClass parent = runtime.getObject();
             klass = rack.defineClassUnder("Input", parent, ALLOCATOR);
             klass.defineAnnotatedMethods(RackInput.class);
         }
-        
+
         if (jruby.getConstantAt("RackInput") == null) { // backwards compatibility
             jruby.setConstant("RackInput", klass); // JRuby::RackInput #deprecated
         }
-        
+
         return klass;
     }
 
     private boolean rewindable;
     private InputStream input;
     private int length;
-    
+
     public RackInput(Ruby runtime, RubyClass klass) {
         super(runtime, klass);
     }
@@ -188,10 +188,10 @@ public class RackInput extends RubyObject {
             try { // inputStream.rewind if inputStream.respond_to?(:rewind)
                 final Method rewind = getRewindMethod(input);
                 if (rewind != null) rewind.invoke(input, (Object[]) null);
-            } 
+            }
             catch (IllegalArgumentException e) {
                 throw getRuntime().newArgumentError(e.getMessage());
-            } 
+            }
             catch (InvocationTargetException e) {
                 final Throwable target = e.getCause();
                 if (target instanceof IOException) {
@@ -201,7 +201,7 @@ public class RackInput extends RubyObject {
             }
             catch (IllegalAccessException e) { /* NOOP */ }
         }
-        
+
         return getRuntime().getNil();
     }
 
@@ -220,45 +220,45 @@ public class RackInput extends RubyObject {
     public void close() {
         try {
             input.close();
-        } 
+        }
         catch (IOException e) { /* ignore */ }
     }
-    
+
     private void setInput(InputStream input) {
         if ( input != null && rewindable && getRewindMethod(input) == null ) {
             input = new RewindableInputStream(input);
         }
         this.input = input;
     }
-    
+
     // NOTE: a bit useless now since we're only using RewindableInputStream
     // but it should work with a custom stream as well thus left as is ...
     private static Method getRewindMethod(InputStream input) {
         try {
             return input.getClass().getMethod("rewind", (Class<?>[]) null);
-        } 
+        }
         catch (NoSuchMethodException e) { /* NOOP */ }
         catch (SecurityException e) { /* NOOP */ }
         return null;
     }
-    
+
     private byte[] readUntil(final int match, final int count) throws IOException {
         ByteArrayOutputStream bs = null;
         int b; long i = 0;
         do {
             b = input.read();
             if ( b == -1 ) break; // EOF
-            
+
             if (bs == null) {
                 bs = new ByteArrayOutputStream( count == 0 ? 128 : count );
             }
             bs.write(b);
-            
+
             if ( ++i == count ) break; // read count bytes
-            
+
         } while ( b != match );
 
         return bs == null ? null : bs.toByteArray();
     }
-    
+
 }

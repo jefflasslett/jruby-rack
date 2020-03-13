@@ -15,21 +15,166 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.descriptor.JspConfigDescriptor;
+import javax.servlet.SessionTrackingMode;
+import javax.servlet.SessionCookieConfig;
+import javax.servlet.FilterRegistration;
+import javax.servlet.ServletRegistration;
+import javax.servlet.Filter;
+
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Set;
+import java.util.EventListener;
+import java.util.Map;
 
 /**
  *
  * @author nicksieger
  */
+@SuppressWarnings("deprecation")
 public class DefaultServletRackContext implements ServletRackContext {
 
     private final RackConfig config;
     private final ServletContext context;
     private final RackLogger logger;
+
+    public void setRequestCharacterEncoding(String encoding) {
+        System.out.println("DBG:DefaultServletRackContext#setRequestCharacterEncoding");
+        throw new UnsupportedOperationException("setRequestCharacterEncoding()");
+    }
+
+    public String getRequestCharacterEncoding() {
+        System.out.println("DBG:DefaultServletRackContext#getRequestCharacterEncoding");
+        throw new UnsupportedOperationException("getRequestCharacterEncoding()");
+    }
+
+    public void setSessionTimeout(int time_out) {
+        throw new UnsupportedOperationException("setSessionTimeout()");
+    }
+
+    public int getSessionTimeout() {
+        throw new UnsupportedOperationException("getSessionTimeout()");
+    }
+
+    public String getVirtualServerName() {
+        throw new UnsupportedOperationException("getVirtualServerName()");
+    }
+
+    public void declareRoles(String... role_names) {
+        throw new UnsupportedOperationException("declareRoles()");
+    }
+
+    public ClassLoader getClassLoader() {
+        throw new UnsupportedOperationException("getClassLoader()");
+    }
+
+    public JspConfigDescriptor getJspConfigDescriptor() {
+        throw new UnsupportedOperationException("getJspConfigDescriptor()");
+    }
+
+    public <T extends EventListener> T createListener(Class<T> clazz) throws ServletException {
+        throw new UnsupportedOperationException("createListener()");
+    }
+
+    public void addListener(Class<? extends EventListener> listenerClass) {
+        throw new UnsupportedOperationException("addListener()");
+    }
+
+    public <T extends EventListener> void addListener(T t) {
+        throw new UnsupportedOperationException("addListener(T)");
+    }
+
+    public void addListener(String className) {
+        throw new UnsupportedOperationException("addListener(String)");
+    }
+
+    public Set<SessionTrackingMode> getEffectiveSessionTrackingModes() {
+        throw new UnsupportedOperationException("getEffectiveSessionTrackingModes(String)");
+    }
+
+    public Set<SessionTrackingMode> getDefaultSessionTrackingModes() {
+        throw new UnsupportedOperationException("getDefaultSessionTrackingModes()");
+    }
+
+    public void setSessionTrackingModes(Set<SessionTrackingMode> sessionTrackingModes) {
+        throw new UnsupportedOperationException("setSessionTrackingModes()");
+    }
+
+    public SessionCookieConfig getSessionCookieConfig() {
+        throw new UnsupportedOperationException("getSessionCookieConfig()");
+    }
+
+    public Map<String,? extends FilterRegistration> getFilterRegistrations()  {
+        throw new UnsupportedOperationException("getFilterRegistrations()");
+    }
+
+    public FilterRegistration getFilterRegistration(String filterName) {
+        throw new UnsupportedOperationException("getFilterRegistration()");
+    }
+
+    public <T extends Filter> T createFilter(Class<T> clazz)
+        throws ServletException {
+        throw new UnsupportedOperationException("createFilter(Class<T>)");
+    }
+
+    public FilterRegistration.Dynamic addFilter(String filterName,
+                                                Class<? extends Filter> filterClass) {
+        throw new UnsupportedOperationException("addFilter(String, Class<? extends Filter>)");
+    }
+
+    public FilterRegistration.Dynamic addFilter(String filterName, Filter filter) {
+        throw new UnsupportedOperationException("addFilter(String, Filter)");
+    }
+
+    public FilterRegistration.Dynamic addFilter(String filterName,
+                                                String className) {
+        throw new UnsupportedOperationException("addFilter(String, String)");
+    }
+
+    public Map<String,? extends ServletRegistration> getServletRegistrations() {
+        throw new UnsupportedOperationException("getServletRegistrations()");
+    }
+
+    public ServletRegistration getServletRegistration(String servletName) {
+        throw new UnsupportedOperationException("getServletRegistrations(String)");
+    }
+
+    public <T extends Servlet> T createServlet(Class<T> clazz)
+        throws ServletException {
+        throw new UnsupportedOperationException("createServlet(Class<T>)");
+    }
+
+    public ServletRegistration.Dynamic addJspFile(String servletName, String jspFile) {
+        throw new UnsupportedOperationException("addJspFile(String, String)");
+    }
+
+    public ServletRegistration.Dynamic 	addServlet(String servletName, String className) {
+        throw new UnsupportedOperationException("addServlet(String, String)");
+    }
+
+    public ServletRegistration.Dynamic 	addServlet(String servletName, Servlet servlet) {
+        throw new UnsupportedOperationException("addServlet(String, Servlet)");
+    }
+
+    public ServletRegistration.Dynamic 	addServlet(String servletName, Class<? extends Servlet> servletClass) {
+        throw new UnsupportedOperationException("addServlet(String, Class<? extends Servlet>)");
+    }
+
+    public boolean 	setInitParameter(String name, String value) {
+        throw new  UnsupportedOperationException("setInitParameter(String,String)");
+    }
+
+    public int 	getEffectiveMajorVersion() {
+        // Returns the major version of the Servlet API that this servlet container supports.
+        return 4;
+    }
+
+    public int 	getEffectiveMinorVersion() {
+        return 0;
+    }
 
     public DefaultServletRackContext(ServletRackConfig config) {
         this.config  = config;
@@ -190,6 +335,16 @@ public class DefaultServletRackContext implements ServletRackContext {
             return ((DefaultServletRackContext) context).getRealContext();
         }
         return context;
+    }
+
+    @Override
+    public void setResponseCharacterEncoding(String encoding) {
+        throw new UnsupportedOperationException("setResponseCharacterEncoding()");
+    }
+
+    @Override
+    public String getResponseCharacterEncoding() {
+        throw new UnsupportedOperationException("getResponseCharacterEncoding()");
     }
 
 }

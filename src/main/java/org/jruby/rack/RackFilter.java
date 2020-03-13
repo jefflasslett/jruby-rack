@@ -47,6 +47,7 @@ public class RackFilter extends UnmappedRackFilter {
     /** Dependency-injected constructor for testing */
     public RackFilter(RackDispatcher dispatcher, RackContext context) {
         super(dispatcher, context);
+        System.out.println("DBG: RackFilter: cons");
         initializeFromConfig();
     }
 

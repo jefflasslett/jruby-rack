@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -81,13 +82,6 @@ public class ResponseCapture extends HttpServletResponseWrapper {
         // if an error has been set previously the caller should deal with it
         if ( handleStatus(status, false) ) {
             super.setStatus(status);
-        }
-    }
-
-    @Override
-    public void setStatus(int status, String message) {
-        if ( handleStatus(status, false) ) {
-            super.setStatus(status, message);
         }
     }
 
@@ -167,6 +161,16 @@ public class ResponseCapture extends HttpServletResponseWrapper {
                 @Override
                 public void write(int b) throws IOException {
                     // swallow output, because we're going to discard it
+                }
+
+                @Override
+                public void setWriteListener(WriteListener write_listener) {
+                    throw new UnsupportedOperationException("setWriteListener*");
+                }
+
+                @Override
+                public boolean 	isReady() {
+                    throw new UnsupportedOperationException("isReady()");
                 }
             };
         }

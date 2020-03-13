@@ -17,62 +17,67 @@ import javax.servlet.http.HttpServletResponse;
 import org.jruby.rack.RackContext;
 import org.jruby.rack.RackEnvironment;
 import org.jruby.rack.RackInput;
+import org.jruby.rack.RackHijack;
 
 /**
  * Rack environment (default) implementation based on {@link HttpServletRequest}..
- * 
+ *
  * @see RackEnvironment
  * @see HttpServletRequest
  * @see HttpServletRequestWrapper
- * 
+ *
  * @author nicksieger
  */
 @SuppressWarnings("deprecation")
 public class ServletRackEnvironment extends HttpServletRequestWrapper
-    implements RackEnvironment, RackEnvironment.ToIO {
-    
+    implements RackEnvironment, RackEnvironment.ToHijack, RackEnvironment.ToIO {
+
     private String scriptName;
     private String requestURI;
     private String requestURIWithoutQuery;
     private String pathInfo;
-    
+
     private final RackContext context;
     private final HttpServletResponse response;
-    
+
     /**
      * Creates an environment instance for the given request, response and context.
      * @param request
      * @param response
-     * @param context 
+     * @param context
      */
     public ServletRackEnvironment(HttpServletRequest request, HttpServletResponse response, RackContext context) {
         super(request);
+        System.out.println("DBG: ServletRackEnvironment: cons");
         this.response = response;
         this.context = context;
     }
 
     /**
-     * @see RackEnvironment#getContext() 
+     * @see RackEnvironment#getContext()
      */
     public RackContext getContext() {
+        System.out.println("DBG: ServletRackEnvironment: getContext");
         return context;
     }
-    
+
     /**
      * The underlying HttpServletResponse
      * @return the response
      */
     public HttpServletResponse getResponse() {
+      System.out.println("DBG: ServletRackEnvironment: getResponse");
     	return response;
     }
-    
+
     /**
      * @see RackEnvironment#getInput()
      */
     public ServletInputStream getInput() throws IOException {
+        System.out.println("DBG: ServletRackEnvironment: getInput");
         return getInputStream();
     }
-    
+
     /**
      * Define the script name as the context path + the servlet path.
      * @return script name
@@ -94,12 +99,12 @@ public class ServletRackEnvironment extends HttpServletRequestWrapper
      * @return full path info
      * @see RackEnvironment#getPathInfo()
      */
-    @Override 
+    @Override
     public String getPathInfo() {
         if (pathInfo != null) {
             return pathInfo;
         }
-        
+
         StringBuilder buffer = new StringBuilder();
         if (getRequestURIWithoutQuery().length() > 0) {
             if (getScriptName().length() > 0 && getRequestURIWithoutQuery().indexOf(getScriptName()) == 0) {
@@ -121,7 +126,7 @@ public class ServletRackEnvironment extends HttpServletRequestWrapper
      * @return URI
      * @see RackEnvironment#getRequestURI()
      */
-    @Override 
+    @Override
     public String getRequestURI() {
         if (requestURI != null) {
             return requestURI;
@@ -152,13 +157,24 @@ public class ServletRackEnvironment extends HttpServletRequestWrapper
     }
 
     private RackInput io;
-    
+
     public RackInput toIO() {
         return io;
     }
-    
+
     public void setIO(RackInput io) {
         this.io = io;
     }
-    
+
+    private RackHijack hijack;
+
+    public RackHijack toHijack() {
+        return hijack;
+    }
+
+    public void setHijack(RackHijack hijack) {
+        this.hijack = hijack;
+    }
+
+
 }
