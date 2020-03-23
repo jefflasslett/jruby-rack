@@ -161,13 +161,13 @@ public interface RackConfig {
 
     /**
      * Return the JNDI name of the JMS connection factory.
-     * @deprecated JMS is rarely used thus should not be here
+     * deprecated JMS is rarely used thus should not be here
      */
     String getJmsConnectionFactory();
 
     /**
      * Return the JNDI properties for JMS.
-     * @deprecated JMS is rarely used thus should not be here
+     * deprecated JMS is rarely used thus should not be here
      */
     String getJmsJndiProperties();
 

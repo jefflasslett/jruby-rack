@@ -16,8 +16,15 @@ import org.jruby.util.ByteList;
 
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.AsyncContext;
 
 import java.io.IOException;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.HttpChannel;
+import org.eclipse.jetty.io.EndPoint;
+
+import java.lang.ClassLoader;
 
 public class RackHijack extends RubyObject {
 
@@ -61,47 +68,60 @@ public class RackHijack extends RubyObject {
     }
 
     @JRubyMethod()
-    public IRubyObject call(ThreadContext context) {
-        final Ruby runtime = getRuntime();
+    public IRubyObject call(ThreadContext context) throws Exception {
         System.out.println("DBG: RackHijack: call");
 
-        RackHijackIO rh_io =
-            new RackHijackIO(runtime,
-                             RackHijackIO.getRackHijackIOClass(runtime));
+        final Ruby runtime = getRuntime();
+        final IRubyObject nil = runtime.getNil();
+        /*
+        ServletRequest srv_req = this.http_servlet_request_wrapper.getRequest();
 
-        RackHijackUpgradeHandler rh_upgrade_handler = null;
+        System.out.println("DBG: RackHijack: call: srv_req class: " + srv_req.getClass().getName());
 
-        try {
-            rh_upgrade_handler =
-                http_servlet_request_wrapper.upgrade(RackHijackUpgradeHandler.class);
-            rh_io.setWebConnection(rh_upgrade_handler.getWebConnection());
+        Request req = Request.getBaseRequest(srv_req);
+
+        HttpChannel http_channel;
+        EndPoint end_point;
+        if (req != null) {
+            System.out.println("DBG: RackHijack: call: req class: " + req.getClass().getName());
+            http_channel = req.getHttpChannel();
+            end_point = http_channel.getEndPoint();
+            System.out.println("DBG: RackHijack: call: http_channel class: " + http_channel.getClass().getName());
+            System.out.println("DBG: RackHijack: call: end_point class: " + end_point.getClass().getName());
+        } else {
+            System.out.println("DBG: RackHijack: call: DO NOT HAVE base request.");
+            throw new Exception("shit balls");
         }
-        catch(ServletException se) {
-            System.out.println("DBG: RackHijack: call: ServletException: " + se.getMessage());
+        */
+
+        // Get the TCP socket out of the request.
+        // Wrap the socket in something that has ruby IO semantics
+        // Return th IO
+
+        RackHijackIO rh_io;
+        try {
+            rh_io =
+                new RackHijackIO(runtime,
+                                 RackHijackIO.getRackHijackIOClass(runtime));
+
+            final AsyncContext async_context =
+                this.http_servlet_request_wrapper.startAsync();
+
+            rh_io.init(async_context);
+        }
+        catch(IllegalStateException illegal_state_e) {
+            System.out.println("DBG: RackHijack: call: illegal_state_exception: " + illegal_state_e.getMessage());
             rh_io = null;
         }
-        catch(IOException e) {
-            System.out.println("DBG: RackHijack: call: IOException");
+        catch(Exception e) {
+            System.out.println("DBG: RackHijack: call: exception: " + e.getMessage());
+            rh_io = null;
         }
         finally {
-            System.out.println("DBG: RackHijack: call: upgrade handler finished");
+            System.out.println("DBG: RackHijack: call: finished");
         }
 
-
-        /*
-         * Now the game is to Upgrade the socket and return the ...
-         * ... what?
-         *
-         * Figure out what goes here
-         * According to ActionCable::Connection::Stream, this returns
-         * "the underlying IO object" and it must respond to `write_nonblock`
-         * like all good Ruby IO objects.
-         */
-
-        // Upgrade the socket, jetty/java style.
-        // Obtain the websocket
-        // Wrap the socket in a RackHijackIO
-        // return the RackHijackIO
-        return rh_io;
+        return (rh_io != null ? JavaEmbedUtils.javaToRuby(runtime, rh_io) : runtime.getNil());
     }
 }
+

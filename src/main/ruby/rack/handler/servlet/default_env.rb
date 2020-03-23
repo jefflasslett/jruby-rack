@@ -19,7 +19,8 @@ module Rack
       # ServletRequest input stream to be not read (e.g. for POSTs).
       class DefaultEnv < Hash # The environment must be an instance of Hash !
 
-        BUILTINS = %w(rack.version rack.hijack rack.input rack.errors rack.url_scheme
+        BUILTINS = %w(rack.version rack.hijack rack.hijack? rack.hijack_io
+          rack.input rack.errors rack.url_scheme
           rack.multithread rack.multiprocess rack.run_once
           java.servlet_request java.servlet_response java.servlet_context
           jruby.rack.version jruby.rack.jruby.version jruby.rack.rack.release).
@@ -232,6 +233,8 @@ module Rack
         def load_builtin(env, key)
           case key
           when 'rack.hijack'          then env[key] = @servlet_env ? @servlet_env.to_hijack : nil
+          when 'rack.hijack?'         then env[key] = true
+          when 'rack.hijack_io'       then env[key] = nil
           when 'rack.version'         then env[key] = ::Rack::VERSION
           when 'rack.multithread'     then env[key] = true
           when 'rack.multiprocess'    then env[key] = false

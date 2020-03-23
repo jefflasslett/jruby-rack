@@ -337,14 +337,14 @@ public class DefaultServletRackContext implements ServletRackContext {
         return context;
     }
 
-    @Override
-    public void setResponseCharacterEncoding(String encoding) {
-        throw new UnsupportedOperationException("setResponseCharacterEncoding()");
-    }
+    // @Override
+    // public void setResponseCharacterEncoding(String encoding) {
+    //     throw new UnsupportedOperationException("setResponseCharacterEncoding()");
+    // }
 
-    @Override
-    public String getResponseCharacterEncoding() {
-        throw new UnsupportedOperationException("getResponseCharacterEncoding()");
-    }
+    // @Override
+    // public String getResponseCharacterEncoding() {
+    //     throw new UnsupportedOperationException("getResponseCharacterEncoding()");
+    // }
 
 }
